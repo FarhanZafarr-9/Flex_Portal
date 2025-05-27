@@ -94,23 +94,12 @@ No credentials or user data are stored locally or externally. Everything is secu
 
 ## 📝 Future Plans (Optional Enhancements)
 
-- Add dark mode toggle
+- Add light mode toggle
 - Add offline access for schedules
 - Cache frequently accessed pages
-- Enable file downloads from within WebView
 
 ---
 
-## 📷 Screenshots (optional)
-
-You can include screenshots here using:
-
-```markdown
-![Home Screen](screenshots/home.png)
-![Marks Page](screenshots/marks.png)
-```
-
----
 
 ## 📌 License
 
