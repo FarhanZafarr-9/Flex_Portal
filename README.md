@@ -100,6 +100,17 @@ No credentials or user data are stored locally or externally. Everything is secu
 
 ---
 
+## 📷 Screenshots
+
+![Login Page](screenshots/login.png)
+![Home Screen](screenshots/home.png)
+![Marks Page](screenshots/marks.png)
+![Attendance Page](screenshots/attendance.png)
+![Tentative Schedule](screenshots/tentative.png)
+![Side Navigation](screenshots/sideNav.png)
+![Summarizations Page](screenshots/summarizations.png)
+
+---
 
 ## 📌 License
 
