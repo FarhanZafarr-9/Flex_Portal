@@ -102,13 +102,13 @@ No credentials or user data are stored locally or externally. Everything is secu
 
 ## 📷 Screenshots
 
-![Login Page](screenshots/login.png)
-![Home Screen](screenshots/home.png)
-![Marks Page](screenshots/marks.png)
-![Attendance Page](screenshots/attendance.png)
-![Tentative Schedule](screenshots/tentative.png)
-![Side Navigation](screenshots/sideNav.png)
-![Summarizations Page](screenshots/summarizations.png)
+![Login Page](screenshots/login.jpg)
+![Home Screen](screenshots/home.jpg)
+![Marks Page](screenshots/marks.jpg)
+![Attendance Page](screenshots/attendance.jpg)
+![Tentative Schedule](screenshots/tentative.jpg)
+![Side Navigation](screenshots/sideNav.jpg)
+![Summarizations Page](screenshots/summarizations.jpg)
 
 ---
 
