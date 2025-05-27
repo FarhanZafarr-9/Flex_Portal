@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_script">Edit Script</string>
+    <string name="save">Save</string>
+    <string name="clone">Clone</string>
+    <string name="apply">Apply</string>
+    <string name="delete">Delete</string>
+    <string name="manage_scripts">Scripts</string>
+    <string name="bar">|</string>
+</resources>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Flex</string>
+    <string name="edit_script">Edit Script</string>
+    <string name="save">Save</string>
+    <string name="clone">Clone</string>
+    <string name="apply">Apply</string>
+    <string name="delete">Delete</string>
+    <string name="manage_scripts">Scripts</string>
+    <string name="bar">|</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="error_icon">Error icon</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="could_not_connect_to_the_server_please_check_your_internet_connection">Could not connect to the server. Please check your internet connection.</string>
+    <string name="try_again">Try Again</string>
+</resources>
