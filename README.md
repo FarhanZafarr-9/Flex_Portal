@@ -102,7 +102,7 @@ No credentials or user data are stored locally or externally. Everything is secu
 
 ## 📷 Screenshots
 
-![Login Page](screenshots/login.jpg)
+![Login Page](screenshots/login.jpg){width=200px}
 ![Home Screen](screenshots/home.jpg)
 ![Marks Page](screenshots/marks.jpg)
 ![Attendance Page](screenshots/attendance.jpg)
