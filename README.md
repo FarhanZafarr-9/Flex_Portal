@@ -25,6 +25,37 @@ Most university portals are not optimized for mobile users. This app aims to sol
 
 ---
 
+## ✨ Some Injected Features & Enhancements
+
+This project includes several custom features , built specifically to enhance student productivity, performance tracking, and planning. Some include:
+
+---
+
+### 📊 Marks Summarization per Table
+- Each subject or component table includes a **total summarization row** showing the sum of marks.
+- Useful for quickly viewing total scores without manual calculation.
+
+---
+
+### 🧮 Grand Total (Unofficial)
+- Before the official marks are uploaded, a **grand total** is calculated using the current entries.
+- Gives students a **real-time view of their expected total** as well, and helps in self-evaluation.
+
+---
+
+### 📅 Quick Attendance Overview
+- Instantly shows a summary of **present vs absent** count.
+- Helps track attendance health without scanning full records.
+
+---
+
+### 📌 Note-Type Prediction & Final Range Estimator
+- Based on the current marks, a **range predictor** estimates where the final total might lie.
+- Helps with academic planning and setting improvement targets.
+
+---
+
+
 ## 🛠️ Technologies Used
 
 - Java (Android Studio)
@@ -102,14 +133,14 @@ No credentials or user data are stored locally or externally. Everything is secu
 
 ## 📷 Screenshots
 
-<div style="display: flex; gap: 10px; flex-wrap: nowrap;">
-  <img src="screenshots/login.jpg" alt="Login Page" width="200" />
-  <img src="screenshots/home.jpg" alt="Home Screen" width="200" />
-  <img src="screenshots/marks.jpg" alt="Marks Page" width="200" />
-  <img src="screenshots/attendance.jpg" alt="Attendance Page" width="200" />
-  <img src="screenshots/tentative.jpg" alt="Tentative Schedule" width="200" />
-  <img src="screenshots/sideNav.jpg" alt="Side Navigation" width="200" />
-  <img src="screenshots/summarizations.jpg" alt="Summarizations Page" width="200" />
+<div style="display: flex; flex-wrap: wrap; gap: 30px;">
+  <img src="screenshots/login.jpg" alt="Login Page" width="250" />
+  <img src="screenshots/home.jpg" alt="Home Screen" width="250" />
+  <img src="screenshots/marks.jpg" alt="Marks Page" width="250" />
+  <img src="screenshots/attendance.jpg" alt="Attendance Page" width="250" />
+  <img src="screenshots/tentative.jpg" alt="Tentative Schedule" width="250" />
+  <img src="screenshots/sideNav.jpg" alt="Side Navigation" width="250" />
+  <img src="screenshots/summarizations.jpg" alt="Summarizations Page" width="250" />
 </div>
 
 ---
@@ -117,3 +148,10 @@ No credentials or user data are stored locally or externally. Everything is secu
 ## 📌 License
 
 This repository is open-source and intended for personal or educational use.
+
+---
+
+<p style="text-align:center; font-size:12px;">Redesigned with ❤️ by Parzival</p>
+
+---
+
