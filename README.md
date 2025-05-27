@@ -102,15 +102,15 @@ No credentials or user data are stored locally or externally. Everything is secu
 
 ## 📷 Screenshots
 
-![Login Page](screenshots/login.jpg)
-
-<img src="screenshots/home.jpg" alt="Home Screen" width="400"/>
-<img src="screenshots/marks.jpg" alt="Marks Page" width="400"/>
-
-![Attendance Page](screenshots/attendance.jpg)
-![Tentative Schedule](screenshots/tentative.jpg)
-![Side Navigation](screenshots/sideNav.jpg)
-![Summarizations Page](screenshots/summarizations.jpg)
+<div style="display: flex; gap: 10px; flex-wrap: nowrap;">
+  <img src="screenshots/login.jpg" alt="Login Page" width="200" />
+  <img src="screenshots/home.jpg" alt="Home Screen" width="200" />
+  <img src="screenshots/marks.jpg" alt="Marks Page" width="200" />
+  <img src="screenshots/attendance.jpg" alt="Attendance Page" width="200" />
+  <img src="screenshots/tentative.jpg" alt="Tentative Schedule" width="200" />
+  <img src="screenshots/sideNav.jpg" alt="Side Navigation" width="200" />
+  <img src="screenshots/summarizations.jpg" alt="Summarizations Page" width="200" />
+</div>
 
 ---
 
