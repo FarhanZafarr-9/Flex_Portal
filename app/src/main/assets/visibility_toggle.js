@@ -316,6 +316,7 @@ function injectStyles() {
 
          #bottomNav {
             margin: 0px !important;
+	    box-shadow: var(--shadow) !important;
          }
 
         .glass-box:active, .glass-button:active {
