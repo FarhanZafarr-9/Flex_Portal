@@ -142,7 +142,7 @@ function add_root_colors(){
     	--border-thick: 2.5px;
 
     	/* Shadows */
-    	--shadow: 4px 4px 6px rgb(0 0 0 / 20%), -4px -4px 6px rgb(35 35 35 / 15%);
+    	--shadow: 1px 1px 12px rgb(0 0 0 / 40%), -4px -4px 12px rgb(35 35 35 / 55%);
     	--box-shadow: #8b8b8b;
     	--glass-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 
