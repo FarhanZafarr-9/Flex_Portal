@@ -181,34 +181,82 @@ function calculatePerformanceScore() {
 
       const currPct = sums.obtained / sums.total;
       const predictionCard = document.createElement('div');
-      predictionCard.className = 'card';
+      predictionCard.className = 'card prediction-note';
 
-      if (sums.total >= 20) {
-        const projectedMin = Math.round(currPct * 90);
-        const projectedMax = Math.round(currPct * 100);
 
-        predictionCard.innerHTML = `
-          <div class="card-body text-center" style="color: #ccc;">
-            <h5 style="font-weight: 600; color: #f4f4f4; margin-bottom: 8px; text-align: left !important ; margin-left: var(--mar-md); text-decoration: underline !important;">
-              Note
-            </h5>
-            <p style="font-size: 14px; font-weight: 500; background-color: var(--glass-bg); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md);">
-              If the trend continues, final marks may be around
-              <span style="display: inline-block; background-color: #20202078; padding: 4px 10px; border-radius: 6px; color: #fff; font-weight: bold; border: 0.75px solid #55555555 !important ">
-                ${projectedMin}–${projectedMax}
-              </span> out of 100.
-            </p>
+      const finalExamDiv = accordion.querySelector(`div[id$="-Final_Exam"]`);
+
+      const projectedMin = Math.round(currPct * 90);
+      const projectedMax = Math.min(Math.round(currPct * 105), 100);
+
+
+      if (finalExamDiv) {
+          // Final exam already exists — use alternate note
+          const obtained = Math.round(sums.obtained);
+          let errorMargin = 0;
+
+            if (obtained < projectedMin) {
+              errorMargin = projectedMin - obtained;
+            } else if (obtained > projectedMax) {
+              errorMargin = obtained - projectedMax;
+            } else {
+              errorMargin = 0; // within range
+            }
+
+          const performance = (obtained >= projectedMax)
+            ? 'Excellent'
+            : (obtained >= projectedMin)
+              ? 'On Track'
+              : 'Needs Improvement';
+
+          predictionCard.innerHTML = `
+            <div class="card-body text-center" style="color: #ccc;">
+          <h5 style="font-weight: 600; color: #f4f4f4; margin-bottom: 8px; text-align: left !important; margin-left: var(--mar-md); text-decoration: underline !important;">
+            Final Analysis
+          </h5>
+          <div style="font-size: 14px; font-weight: 500; background-color: var(--glass-bg); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md); text-align: left;">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Predicted</span><b>${projectedMin}–${projectedMax}</b>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Obtained</span><b>${obtained}</b>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Error</span><b>${errorMargin}</b>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Performance</span><b>${performance}</b>
+            </div>
           </div>
-        `;
+        </div>
+
+          `;
+      } else if (sums.total >= 20) {
+          // Normal prediction card
+          predictionCard.innerHTML = `
+            <div class="card-body text-center" style="color: #ccc;">
+              <h5 style="font-weight: 600; color: #f4f4f4; margin-bottom: 8px; text-align: left !important ; margin-left: var(--mar-md); text-decoration: underline !important;">
+                Note
+              </h5>
+              <p style="font-size: 14px; font-weight: 500; background-color: var(--glass-bg); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md);">
+                If the trend continues, final marks may be around
+                <span style="display: inline-block; background-color: #20202078; padding: 4px 10px; border-radius: 6px; color: #fff; font-weight: bold; border: 0.75px solid #55555555 !important">
+                  ${projectedMin}–${projectedMax}
+                </span> out of 100.
+              </p>
+            </div>
+          `;
       } else {
-        predictionCard.innerHTML = `
-          <div class="card-body text-center" style="color: #ccc;">
-            <p style="font-size: 14px;">Not enough data to predict performance yet.</p>
-          </div>
-        `;
-      }
+          // Not enough data
+          predictionCard.innerHTML = `
+            <div class="card-body text-center" style="color: #ccc;">
+              <p style="font-size: 14px;">Not enough data to predict performance yet.</p>
+            </div>
+          `;
+        }
 
-      gtDiv.appendChild(predictionCard);
+        gtDiv.appendChild(predictionCard);
+
     });
   });
 }
