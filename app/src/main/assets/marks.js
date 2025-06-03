@@ -214,7 +214,7 @@ function calculatePerformanceScore() {
           <h5 style="font-weight: 600; color: #f4f4f4; margin-bottom: 8px; text-align: left !important; margin-left: var(--mar-md); text-decoration: underline !important;">
             Final Analysis
           </h5>
-          <div style="font-size: 14px; font-weight: 500; background-color: var(--glass-bg); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md); text-align: left;">
+          <div style="font-size: 14px; font-weight: 500; background-color: var(--secondary-bg-color); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md); text-align: left;">
             <div style="display: flex; justify-content: space-between;">
               <span>Predicted</span><b>${projectedMin}–${projectedMax}</b>
             </div>
@@ -238,7 +238,7 @@ function calculatePerformanceScore() {
               <h5 style="font-weight: 600; color: #f4f4f4; margin-bottom: 8px; text-align: left !important ; margin-left: var(--mar-md); text-decoration: underline !important;">
                 Note
               </h5>
-              <p style="font-size: 14px; font-weight: 500; background-color: var(--glass-bg); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md);">
+              <p style="font-size: 14px; font-weight: 500; background-color: var(--secondary-bg-color); border: var(--border-width) solid var(--border-color) !important; border-radius: var(--border-radius); padding: var(--pad-md);">
                 If the trend continues, final marks may be around
                 <span style="display: inline-block; background-color: #20202078; padding: 4px 10px; border-radius: 6px; color: #fff; font-weight: bold; border: 0.75px solid #55555555 !important">
                   ${projectedMin}–${projectedMax}
