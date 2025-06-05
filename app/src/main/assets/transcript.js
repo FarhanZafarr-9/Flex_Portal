@@ -2,7 +2,6 @@ function add_transcript(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	.m-footer,
 	.flaticon-more {
 		display: none !important;
 	}
