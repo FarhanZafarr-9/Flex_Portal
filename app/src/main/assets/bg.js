@@ -192,6 +192,16 @@ function add_root_colors(){
             box-shadow: none !important;
             transform: translate(10px, -10px);
         }
+
+        .m-footer{
+        		box-shadow: none !important;
+        		background-color: transparent !important;
+        		margin-bottom: 4rem !important;
+        }
+	
+        .m-footer .m-footer__copyright {
+        	  color: transparent !important;
+        }
     `;
     document.head.appendChild(style);
 }
