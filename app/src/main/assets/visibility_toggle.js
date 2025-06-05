@@ -211,13 +211,22 @@ function injectBottomNav() {
             <i class="fas fa-sign-out-alt"></i>
         </a>
         <div id="moreOptions" class="more-options hidden">
-            <a href="https://flexstudent.nu.edu.pk/Student/ChangePassword" title="Change Password">
-                <i class="fas fa-key"></i>
-            </a>
-            <a href="#" title="Credits" onclick="openCredits()">
-                <i class="fas fa-star"></i>
-            </a>
-        </div>
+	    <a href="https://flexstudent.nu.edu.pk/Student/ChangePassword" title="Change Password">
+		<i class="fas fa-key"></i>
+	    </a>
+	    <a href="#" title="Credits" onclick="openCredits()">
+		<i class="fas fa-star"></i>
+	    </a>
+	    <a href="https://github.com/FarhanZafarr-9/Flex_Portal" target="_blank" title="GitHub">
+		<i class="fas fa-code-branch"></i>
+	    </a>
+	    <a href="https://github.com/FarhanZafarr-9/Flex_Portal/issues/new?template=bug_report.md" target="_blank" title="Report Bug">
+		<i class="fas fa-bug"></i>
+	    </a>
+	    <a href="https://github.com/FarhanZafarr-9/Flex_Portal/issues/new?template=feature_request.md" target="_blank" title="Suggest Feature">
+		<i class="fas fa-lightbulb"></i>
+	    </a>
+	</div>
     `;
     document.body.appendChild(nav);
 
@@ -432,16 +441,19 @@ function injectStyles() {
 		}
 
 
-        .more-options {
-            position: absolute;
-            bottom: 70px;
-            right: 0%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 4px;
-            transition: all 0.4s ease-in-out;
-        }
+	more-options {
+	    position: absolute;
+	    bottom: 70px;
+	    right: 0%;
+	    display: flex;
+	    flex-direction: column;
+	    background-color: #202020c0;
+	    gap: 15px;
+	    padding: 4px;
+	    transition: all 0.4s ease-in-out;
+	    backdrop-filter: blur(12px) !important;
+	    box-shadow: var(--shadow);
+	}
 
         .more-options.hidden {
             display: none;
@@ -471,6 +483,36 @@ function injectStyles() {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
+
+ 	.utility-buttons {
+	    display: flex;
+	    flex-wrap: wrap;
+	    border: var(--border-width) solid var(--border-color) !important;
+	    margin: 15px 5px;
+	    padding: 15px 5px;
+	    border-radius: var(--border-radius);
+	    background-color: var(--light-bg-color);
+	}
+
+	.utility-buttons .glass-button {
+		width: 45%;
+		padding: 6px 10px;
+		font-size: 12px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		background: var(--blur-bg);
+		color: var(--main-font-color, #121212);
+		transition: background 0.3s ease;
+	}
+
+	.utility-buttons .glass-button:nth-child(3) {
+		flex: 1 1 100%;
+		margin-top: 8px;
+	}
     `;
 
     document.head.appendChild(style);
@@ -553,11 +595,34 @@ function injectControlPanel() {
     menuNav.appendChild(panel);
 }
 
+function createUtilityButtons() {
+	const menuNav = document.querySelector('.m-aside-menu .m-menu__nav');
+    if (!menuNav || document.getElementById('utility-button')) return;
+     // GitHub Utility Buttons
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'utility-buttons';
+
+    const makeBtn = (label, icon, link) => {
+        const btn = document.createElement('button');
+        btn.className = 'glass-button';
+        btn.innerHTML = `<i class="fas ${icon}"></i> ${label}`;
+        btn.onclick = () => window.open(link, '_blank');
+        return btn;
+    };
+
+    btnGroup.appendChild(makeBtn('GitHub', 'fa-code-branch', 'https://github.com/FarhanZafarr-9/Flex_Portal'));
+    btnGroup.appendChild(makeBtn('Report Bug', 'fa-bug', 'https://github.com/FarhanZafarr-9/Flex_Portal/issues/new?template=bug_report.md'));
+    btnGroup.appendChild(makeBtn('Suggest Feature', 'fa-lightbulb', 'https://github.com/FarhanZafarr-9/Flex_Portal/issues/new?template=feature_request.md'));
+
+    menuNav.appendChild(btnGroup);
+}
+
 function initUI() {
     injectStyles();
     //injectControlPanel();
     showCredits();
     injectBottomNav();
+    createUtilityButtons();
 }
 
 window.openCredits = function() {
