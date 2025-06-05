@@ -2,7 +2,7 @@ function add_fee_report(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	.m-footer,
+	
 	.flaticon-more,
 	span.rdosp {
 		display: none !important;
