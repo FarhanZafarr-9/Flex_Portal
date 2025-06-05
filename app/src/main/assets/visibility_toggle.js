@@ -441,7 +441,7 @@ function injectStyles() {
 		}
 
 
-	more-options {
+	.more-options {
 	    position: absolute;
 	    bottom: 70px;
 	    right: 0%;
@@ -491,7 +491,7 @@ function injectStyles() {
 	    margin: 15px 5px;
 	    padding: 15px 5px;
 	    border-radius: var(--border-radius);
-	    background-color: var(--light-bg-color);
+	    background-color: var(--blur-bg);
 	}
 
 	.utility-buttons .glass-button {
@@ -504,7 +504,7 @@ function injectStyles() {
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
-		background: var(--blur-bg);
+		background: var(--light-bg-color);
 		color: var(--main-font-color, #121212);
 		transition: background 0.3s ease;
 	}
