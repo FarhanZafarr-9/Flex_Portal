@@ -2,7 +2,7 @@ function add_questions_style(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	.m-footer,
+	
 	.flaticon-more,
 	span.rdosp {
 		display: none !important;
