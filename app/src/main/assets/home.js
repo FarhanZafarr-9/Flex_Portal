@@ -2,7 +2,7 @@ function add_home() {
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	.m-footer,
+	
 	.flaticon-more {
 		display: none !important;
 	}
