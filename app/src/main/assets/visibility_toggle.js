@@ -307,10 +307,9 @@ function injectStyles() {
             color: var(--main-font-color, #fff);
             border: 0.75px solid #55555555 !important;
             font-size: 13px;
-		    padding: 10px;
-		    width: auto;
-		    margin: 10px 6px;
-		    margin-bottom: 0px;
+	    padding: 10px;
+	    width: auto;
+	    margin: 10px 6px 0px 6px !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             z-index: 99;
