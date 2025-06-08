@@ -318,7 +318,8 @@ function add_marks() {
 		border-radius: var(--border-radius) !important;
 	}
 
-	.m-portlet__body
+	.m-portlet__body,
+ 	.m-portlet__head
 	{
 	    background-color: var(--glass-bg) !important;
 	}
@@ -329,9 +330,8 @@ function add_marks() {
 	}
 
     .m-portlet__head
-
     {
-        background-color: var(--secondary-bg-color) !important;
+        //background-color: var(--secondary-bg-color) !important;
     }
 
     .card-header, .card-body {
