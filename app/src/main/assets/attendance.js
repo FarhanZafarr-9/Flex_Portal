@@ -144,6 +144,7 @@ function add_attendance(){
 	    display: flex;
 	    justify-content: space-evenly;
 	    align-items: center;
+     	    gap: 1%;
 	}
 	
 	.attendance-summary .summary-box {
@@ -152,7 +153,7 @@ function add_attendance(){
 	    border: var(--border-width) solid var(--border-color) !important;
 	    padding: 8px;
 	    text-align: center;
-	    width: 32%;
+	    width: 32.33%;
 	}
 	
 	span.summary-box:first-child {
