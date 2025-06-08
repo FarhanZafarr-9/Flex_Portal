@@ -29,14 +29,15 @@ function add_attendance(){
 		border-radius: var(--border-radius) !important;
 	}
 
-	.m-portlet__body
+	.m-portlet__body,
+ 	.m-portlet__head
 	{
 	    background-color: var(--glass-bg) !important;
 	}
 
     .m-portlet__head
     {
-        background-color: var(--secondary-bg-color) !important;
+        //background-color: var(--secondary-bg-color) !important;
     }
 
 	.table {
