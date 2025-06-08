@@ -141,14 +141,26 @@ function add_attendance(){
 
 	.attendance-summary {
 	    margin-bottom: var(--mar-md);
-	    padding: var(--pad-sm) var(--pad-sm);
-	    border: var(--border-width) solid var(--border-color) ! IMPORTANT;
-	    border-radius: calc(var(--border-radius) * .75);
-	    background-color: var(--secondary-bg-color);
-	    font-weight: var(--font-medium);
-	    font-size: 14px;
+	    display: flex;
+	    justify-content: space-evenly;
+	    align-items: center;
+	}
+	
+	.attendance-summary .summary-box {
+	    //background-color: var(--secondary-bg-color);
+	    background-color: var(--light-bg-color);
+	    border: var(--border-width) solid var(--border-color) !important;
+	    padding: 8px;
 	    text-align: center;
-	    color: var(--main-font-color);
+	    width: 32%;
+	}
+	
+	span.summary-box:first-child {
+	    border-radius: 6px 0 0 6px !important;
+	}
+	
+	span.summary-box:last-child {
+	    border-radius: 0 6px 6px 0 !important;
 	}
 	`;
 	document.head.appendChild(style);
@@ -196,7 +208,11 @@ function add_attendance(){
 
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'attendance-summary';
-        summaryDiv.innerHTML = `Total Marked:&nbsp;${absentees + presents}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Present:&nbsp;${presents}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Absent:&nbsp;${absentees}`;
+        summaryDiv.innerHTML = `
+	    <span class="summary-box">Total : ${absentees + presents}</span>
+	    <span class="summary-box">Present : ${presents}</span>
+	    <span class="summary-box">Absent : ${absentees}</span>
+	`;
 
         const parent = table.parentNode;
         parent.insertBefore(summaryDiv, table);
