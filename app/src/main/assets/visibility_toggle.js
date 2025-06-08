@@ -495,7 +495,7 @@ function injectStyles() {
 		font-size: 12px;
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		gap: 8px;
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
