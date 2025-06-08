@@ -487,11 +487,7 @@ function injectStyles() {
  	.utility-buttons {
 	    display: flex;
 	    flex-wrap: wrap;
-	    border: var(--border-width) solid var(--border-color) !important;
-	    margin: 15px 5px;
-	    padding: 15px 5px;
-	    border-radius: var(--border-radius);
-	    background-color: var(--blur-bg);
+	    justify-content: space-between;
 	}
 
 	.utility-buttons .glass-button {
@@ -504,7 +500,7 @@ function injectStyles() {
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
-		background: var(--light-bg-color);
+		background: var(--blur-bg);
 		color: var(--main-font-color, #121212);
 		transition: background 0.3s ease;
 	}
