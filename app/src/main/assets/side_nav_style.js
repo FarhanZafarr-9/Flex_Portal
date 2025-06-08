@@ -6,12 +6,15 @@ function side_nav_style() {
     .m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item:hover>.m-menu__link .m-menu__link-text,
     .m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item--active>.m-menu__link .m-menu__link-text,
     .m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item--active>.m-menu__link .m-menu__link-icon,
-    .m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item:hover>.m-menu__link .m-menu__link-icon,
-    .m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item:hover {
+    .m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item:hover>.m-menu__link .m-menu__link-icon {
         background-color: var(--bg-color) !important;
         color: var(--main-font-color) !important;
     }
 
+    li.m-menu__item.m-menu__item--submenu {
+	background-color: transparent !important;
+     }
+	
 	.m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item--active>.m-menu__link,
 	.m-aside-menu.m-aside-menu--skin-dark .m-menu__nav>.m-menu__item:hover>.m-menu__link
 	{
