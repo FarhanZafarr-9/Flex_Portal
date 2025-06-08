@@ -32,7 +32,7 @@ function side_nav_style() {
         outline: var(--border-width) solid var(--border-color);
         color: var(--main-font-color) !important;
         transform: scale(.95);
-        border-radius: var(--border-radius);
+        border-radius: var(--border-radius) !important;
         background-color: var(--blur-bg);
     }
 
@@ -97,10 +97,22 @@ function side_nav_style() {
 	    font-weight: var(--font-bold);
 	}
 
-    .m-aside-left-overlay{
-        background: rgb(0 0 0 / 25%) !important;
-        backdrop-filter: var(--backdrop-blur);
-    }
+	.m-aside-left-overlay {
+	        background: rgb(0 0 0 / 25%) !important;
+	        backdrop-filter: var(--backdrop-blur);
+	        z-index: 500 !important;
+		    animation: fadeInOverlay 0.4s ease-in-out !important;
+	    }
+	
+	    @keyframes fadeInOverlay {
+		    from { opacity: 0; }
+		    to { opacity: 1; }
+		}
+	
+		.m-aside-left.m-aside-left--on,
+		.m-aside-left--on .m-aside-left-close {
+	        transition: all .4s ease-in-out !important;
+		}
 	`;
 
 	document.head.appendChild(style);
