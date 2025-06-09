@@ -3,6 +3,19 @@ package com.example.flex;
 import static android.webkit.WebViewClient.ERROR_CONNECT;
 import static android.webkit.WebViewClient.ERROR_HOST_LOOKUP;
 
+import android.Manifest;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.os.Looper;
+
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -16,6 +29,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowInsets;
@@ -31,9 +45,11 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -60,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
     private Runnable timeoutRunnable;
     private boolean isRetrying = false;
 
+    private static final int STORAGE_PERMISSION_CODE = 100;
+    private static final int MANAGE_STORAGE_CODE = 2296;
+
     // URLs
     public static final String BASE_URL = "https://flexstudent.nu.edu.pk/";
     private static final String LOGIN_URL = BASE_URL + "Login";
@@ -77,7 +96,13 @@ public class MainActivity extends AppCompatActivity {
         setupSwipeRefresh();
         setupRetryButton();
 
-        loadInitialPage();
+        // Request storage permission when the app starts
+        if (!hasStoragePermission()) {
+            requestStoragePermission();
+        } else {
+            loadInitialPage();
+        }
+        checkForUpdate();
     }
 
     private void initializeViews() {
@@ -111,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetWebViewState() {
         webView.stopLoading();
-        webView.clearView();
         webView.loadUrl("about:blank");
         firstPage = true;
         redirectInProgress = false;
@@ -124,21 +148,26 @@ public class MainActivity extends AppCompatActivity {
             progressIndicator.setVisibility(View.VISIBLE);
             progressIndicator.setIndeterminate(true);
 
-            // Clear any existing timeouts
             timeoutHandler.removeCallbacks(timeoutRunnable);
-
-            // Set up timeout
             timeoutRunnable = () -> {
                 if (webView.getProgress() < 100) {
                     handleError(-1, "Connection timed out", LOGIN_URL);
                 }
             };
-            timeoutHandler.postDelayed(timeoutRunnable, 10000); // 10 seconds timeout
+            timeoutHandler.postDelayed(timeoutRunnable, 15000);
 
-            webView.loadUrl(LOGIN_URL);
+            safeLoadUrl(LOGIN_URL);
         } else {
             showErrorView("No internet connection. Please check your network settings and try again.");
         }
+    }
+
+    private void safeLoadUrl(String url) {
+        String currentUrl = webView.getUrl();
+        if (currentUrl != null && currentUrl.equals(url)) {
+            return;
+        }
+        webView.loadUrl(url);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -149,16 +178,13 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             webSettings.setForceDark(WebSettings.FORCE_DARK_ON);
         }
-        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         webSettings.setAllowContentAccess(true);
 
         webView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_gray));
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-        }
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             webSettings.setSafeBrowsingEnabled(false);
@@ -239,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            // Check if page loaded properly
             if (view.getContentHeight() == 0) {
                 handleError(-1, "Page failed to load", url);
                 return;
@@ -249,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 firstPage = false;
                 if (isNetworkAvailable()) {
                     redirectInProgress = true;
-                    view.loadUrl(MARKS_URL);
+                    safeLoadUrl(MARKS_URL);
                 } else {
                     handleError(-1, "Lost connection during redirect", url);
                 }
@@ -263,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 injectScript(view, url, () -> {
                     swipeRefreshLayout.setRefreshing(false);
                     enableFullScreenMode();
-                    view.postDelayed(MainActivity.this::revealWebView, 150);
+                    view.postDelayed(MainActivity.this::revealWebView, 200);
                 });
             } else {
                 handleError(-1, "Invalid page content", url);
@@ -290,22 +315,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                    request.isForMainFrame() &&
-                    !redirectInProgress) {
+            if (request.isForMainFrame() && !redirectInProgress) {
                 handleError(error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
             }
         }
     }
 
-    private void injectScript(WebView webView,String url, Runnable onComplete) {
+    private void injectScript(WebView webView, String url, Runnable onComplete) {
         try {
             StringBuilder script = new StringBuilder();
             script.append("document.documentElement.style.opacity = '0';");
-            //pending pages
-            // fee challan
-            // marks plo, grades report
-            // maybe some more
 
             if(!url.contains("farhanzafarr9")) {
                 script.append(readAssetFile("bg.js"));
@@ -351,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                 else if(url.contains("ChangePassword")){
                     script.append(readAssetFile("password.js"));
                 }
-                // feeling lazy to make the scripts for these last 2 pages
+                // felt lazier for these last 2
                 // it is what it is
                 else if(url.contains("GradeReport")){
                     script.append(readAssetFile("feeReport.js"));
@@ -359,14 +378,11 @@ public class MainActivity extends AppCompatActivity {
                 else if(url.contains("StudentPloRpt")){
                     script.append(readAssetFile("feeReport.js"));
                 }
-
                 else{
-                    //fall-back to old script
                     script.append(readAssetFile("add_style.js"));
                 }
                 script.append(readAssetFile("side_nav_style.js"));
                 script.append(readAssetFile("visibility_toggle.js"));
-
             }
 
             script.append("document.body.classList.add('modified-by-app');");
@@ -385,8 +401,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void handleError(int errorCodeValue, String description, String failingUrl) {
-        // Skip if we're already handling an error (including animation states)
         if (errorView.getVisibility() == View.VISIBLE || isRetrying) {
             return;
         }
@@ -395,40 +411,41 @@ public class MainActivity extends AppCompatActivity {
                 ", errorCode: " + errorCodeValue + ", description: " + description);
 
         runOnUiThread(() -> {
-            // Cancel any pending timeouts
             timeoutHandler.removeCallbacks(timeoutRunnable);
-
-            // Stop any ongoing loading
             webView.stopLoading();
 
-            // Stop animations and hide progress
             webView.clearAnimation();
             loaderView.clearAnimation();
             errorView.clearAnimation();
             swipeRefreshLayout.setRefreshing(false);
             progressIndicator.setVisibility(View.INVISIBLE);
 
-            // Determine the most appropriate error message
-            String errorMsg;
-            if (!isNetworkAvailable()) {
-                errorMsg = "No internet connection";
-            } else if (errorCodeValue == ERROR_HOST_LOOKUP || errorCodeValue == ERROR_CONNECT) {
-                errorMsg = "Couldn't connect to the server";
-            } else {
-                errorMsg = "Connection failed";
-            }
-
-            // Add description if available and not redundant
-            if (description != null && !description.isEmpty() &&
-                    !description.toLowerCase().contains(errorMsg.toLowerCase())) {
-                errorMsg += ": " + description;
-            }
+            String errorMsg = getString(errorCodeValue, description);
 
             showErrorView(errorMsg);
             errorCode.setText("Error code: " + errorCodeValue);
             errorCode.setVisibility(View.VISIBLE);
         });
     }
+
+    @NonNull
+    private String getString(int errorCodeValue, String description) {
+        String errorMsg;
+        if (!isNetworkAvailable()) {
+            errorMsg = "No internet connection";
+        } else if (errorCodeValue == ERROR_HOST_LOOKUP || errorCodeValue == ERROR_CONNECT) {
+            errorMsg = "Couldn't connect to the server";
+        } else {
+            errorMsg = "Connection failed";
+        }
+
+        if (description != null && !description.isEmpty() &&
+                !description.toLowerCase().contains(errorMsg.toLowerCase())) {
+            errorMsg += ": " + description;
+        }
+        return errorMsg;
+    }
+
     private void setupRetryButton() {
         retryButton.setOnClickListener(v -> {
             Log.d(TAG, "Retry button clicked");
@@ -436,12 +453,10 @@ public class MainActivity extends AppCompatActivity {
             hideErrorViewWithAnimation();
             resetWebViewState();
 
-            // Ensure loader is visible during retry
             showLoaderWithAnimation();
             progressIndicator.setVisibility(View.VISIBLE);
             progressIndicator.setIndeterminate(true);
 
-            // Set up timeout for retry as well
             timeoutHandler.removeCallbacks(timeoutRunnable);
             timeoutRunnable = () -> {
                 Log.d(TAG, "Retry timeout triggered");
@@ -449,13 +464,9 @@ public class MainActivity extends AppCompatActivity {
                     handleError(-1, "Connection timed out", LOGIN_URL);
                 }
             };
-            timeoutHandler.postDelayed(timeoutRunnable, 10000); // 10 seconds timeout
+            timeoutHandler.postDelayed(timeoutRunnable, 15000);
 
-            // Add delay before loading to ensure UI updates properly
-            new Handler().postDelayed(() -> {
-
-                loadInitialPage();
-            }, 300);
+            new Handler().postDelayed(this::loadInitialPage, 300);
         });
     }
 
@@ -487,18 +498,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showErrorView(String message) {
-        // Stop all animations first
         webView.clearAnimation();
         loaderView.clearAnimation();
         errorView.clearAnimation();
 
-        // Force immediate state changes
         webView.setVisibility(View.GONE);
         loaderView.setVisibility(View.GONE);
 
         errorMessage.setText(message);
         errorView.setVisibility(View.VISIBLE);
-        errorView.setAlpha(1f); // Skip animation entirely
+        errorView.setAlpha(1f);
     }
 
     private void hideErrorViewWithAnimation() {
@@ -517,7 +526,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void revealWebView() {
-        // Only reveal the WebView when page is actually ready
         hideLoaderView();
         webView.setVisibility(View.VISIBLE);
         webView.setAlpha(0f);
@@ -556,10 +564,7 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton("Cancel", null)
                     .create();
 
-            // Set the custom background for the dialog
             Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_rounded_background);
-
-            // Show the dialog
             dialog.show();
         }
     }
@@ -579,7 +584,6 @@ public class MainActivity extends AppCompatActivity {
                 controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
             }
         } else {
-            // Deprecated method but works on older versions
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -595,6 +599,187 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void checkForUpdate() {
+        new Thread(() -> {
+            try {
+                Log.d(TAG, "Starting update check...");
+
+                // Get current version first
+                PackageInfo PI = getPackageManager().getPackageInfo(getPackageName(), 0);
+                String currentVer = PI.versionName;
+                Log.d(TAG, "Current app version: " + currentVer);
+
+                URL url = new URL("https://api.github.com/repos/FarhanZafarr-9/Flex_Portal/releases/latest");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(10000); // 10 second timeout
+                conn.setReadTimeout(10000);
+
+                int responseCode = conn.getResponseCode();
+                Log.d(TAG, "GitHub API response code: " + responseCode);
+
+                if (responseCode != 200) {
+                    Log.e(TAG, "GitHub API request failed with code: " + responseCode);
+                    return;
+                }
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder SB = new StringBuilder();
+                String L;
+                while ((L = reader.readLine()) != null) SB.append(L);
+                reader.close();
+
+                String jsonResponse = SB.toString();
+                Log.d(TAG, "GitHub API response: " + jsonResponse.substring(0, Math.min(200, jsonResponse.length())) + "...");
+
+                JSONObject J = new JSONObject(jsonResponse);
+                String tagName = J.getString("tag_name");
+                String latestVer = tagName.replace("v", "");
+                String body = J.getString("body");
+
+                Log.d(TAG, "Latest version tag: " + tagName);
+                Log.d(TAG, "Latest version (cleaned): " + latestVer);
+                Log.d(TAG, "Release notes: " + body);
+
+                // Check if assets exist
+                if (!J.has("assets") || J.getJSONArray("assets").length() == 0) {
+                    Log.e(TAG, "No assets found in the release");
+                    return;
+                }
+
+                JSONObject asset = J.getJSONArray("assets").getJSONObject(0);
+                String DURL = asset.getString("browser_download_url");
+                int sizeMB = asset.getInt("size") / (1024 * 1024);
+
+                Log.d(TAG, "Asset download URL: " + DURL);
+                Log.d(TAG, "Asset size: " + sizeMB + " MB");
+
+                boolean isNewer = isNewerVersion(currentVer, latestVer);
+                Log.d(TAG, "Is newer version available? " + isNewer);
+                Log.d(TAG, "Version comparison: " + currentVer + " vs " + latestVer);
+
+                if (isNewer) {
+                    Log.d(TAG, "Showing update dialog...");
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        DialogHelper dialogHelper = new DialogHelper(MainActivity.this);
+                        dialogHelper.showUpdateDialog(latestVer, sizeMB, body, DURL);
+                    });
+                }
+            } catch (Exception E) {
+                Log.e(TAG, "Update check failed", E);
+            }
+        }).start();
+    }
+
+    private boolean isNewerVersion(String current, String latest) {
+        Log.d(TAG, "Comparing versions - Current: '" + current + "', Latest: '" + latest + "'");
+
+        // Handle null or empty versions
+        if (current == null || latest == null) {
+            Log.e(TAG, "One of the versions is null - Current: " + current + ", Latest: " + latest);
+            return false;
+        }
+
+        if (current.trim().isEmpty() || latest.trim().isEmpty()) {
+            Log.e(TAG, "One of the versions is empty - Current: '" + current + "', Latest: '" + latest + "'");
+            return false;
+        }
+
+        // Remove any whitespace
+        current = current.trim();
+        latest = latest.trim();
+
+        String[] currentParts = current.split("\\.");
+        String[] latestParts = latest.split("\\.");
+
+        Log.d(TAG, "Current parts: " + java.util.Arrays.toString(currentParts));
+        Log.d(TAG, "Latest parts: " + java.util.Arrays.toString(latestParts));
+
+        for (int i = 0; i < Math.min(currentParts.length, latestParts.length); i++) {
+            try {
+                int currentNum = Integer.parseInt(currentParts[i].trim());
+                int latestNum = Integer.parseInt(latestParts[i].trim());
+
+                Log.d(TAG, "Comparing part " + i + ": " + currentNum + " vs " + latestNum);
+
+                if (latestNum > currentNum) {
+                    Log.d(TAG, "Latest version is newer at part " + i);
+                    return true;
+                }
+                if (latestNum < currentNum) {
+                    Log.d(TAG, "Current version is newer at part " + i);
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Error parsing version numbers at part " + i + ": " + e.getMessage());
+                // Fallback to string comparison
+                if (!latestParts[i].equals(currentParts[i])) {
+                    boolean result = latestParts[i].compareTo(currentParts[i]) > 0;
+                    Log.d(TAG, "Using string comparison: " + result);
+                    return result;
+                }
+            }
+        }
+
+        boolean result = latestParts.length > currentParts.length;
+        Log.d(TAG, "Version comparison result (length check): " + result);
+        return result;
+    }
+
+    boolean hasStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
+        } else {
+            return ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    void requestStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, MANAGE_STORAGE_CODE);
+            } catch (Exception e) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivityForResult(intent, MANAGE_STORAGE_CODE);
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MANAGE_STORAGE_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    // Permission granted, proceed with download
+                    loadInitialPage();
+                } else {
+                    Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with download
+                loadInitialPage();
+            } else {
+                Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
