@@ -71,7 +71,7 @@ function add_log_in() {
 
 	.m-login.m-login--1 .m-login__wrapper {
 	    padding: 5% 2rem 0rem 2rem !important;
-	        max-width: 95vw !important;
+	    max-width: 90vw !important;
 	}
 
 	.g-recaptcha {
@@ -96,8 +96,8 @@ function add_log_in() {
 	.btn {
 	    border-radius: calc(var(--border-radius) * 0.85) !important ;
 	    background-color: var(--btn-active-bg) !important;
-	    box-shadow: var(--glass-shadow) !important;
-	    padding: .75rem 2rem !important;
+	    box-shadow: none !important;
+	    padding: .75rem 3rem !important;
 	}
 
 	.alert.m-alert--outline.alert-danger,
@@ -127,6 +127,12 @@ function add_log_in() {
 	body {
 		background-color: transparent !important;
 	}
+
+    .m-stack.m-stack--hor>.m-stack__item.m-stack__item--fluid {
+        display: flex;
+        height: auto;
+        justify-content: center;
+    }
 
 	`;
 	document.head.appendChild(style);

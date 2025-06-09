@@ -291,7 +291,6 @@ function add_marks() {
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	.m-footer,
 	.flaticon-more {
 		display: none !important;
 	}
@@ -319,7 +318,7 @@ function add_marks() {
 	}
 
 	.m-portlet__body,
- 	.m-portlet__head
+	.m-portlet__head
 	{
 	    background-color: var(--glass-bg) !important;
 	}
@@ -419,9 +418,9 @@ function add_marks() {
 	}
 
 	.btn {
-	    border-radius: calc(var(--border-radius) * 0.85) ;
+	   border-radius: calc(var(--border-radius) * 0.85) ;
 	   background-color: var(--btn-active-bg) ;
-	    box-shadow: var(--glass-shadow);
+	   box-shadow: none !important;
 	}
 
 	.btn-brand:hover {

@@ -127,14 +127,13 @@ function add_withdraw(){
 		background-color: transparent !important;
 	}
 
-	.m-portlet.m-portlet--primary.m-portlet--head-solid-bg {
+	.m-portlet.m-portlet--primary.m-portlet--head-solid-bg, .btn {
     	box-shadow: none !important;
 	}
 
 	.btn {
 	    border-radius: calc(var(--border-radius) * 0.85) ;
 	    background-color: var(--btn-active-bg) ;
-	    box-shadow: var(--glass-shadow);
 	}
 
 	.btn-brand:hover {

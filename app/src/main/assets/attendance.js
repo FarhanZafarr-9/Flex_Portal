@@ -2,7 +2,6 @@ function add_attendance(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	
 	.flaticon-more {
 		display: none !important;
 	}
@@ -30,7 +29,7 @@ function add_attendance(){
 	}
 
 	.m-portlet__body,
- 	.m-portlet__head
+	.m-portlet__head
 	{
 	    background-color: var(--glass-bg) !important;
 	}
@@ -118,7 +117,7 @@ function add_attendance(){
 	.btn {
 	    border-radius: calc(var(--border-radius) * 0.85) ;
 	    background-color: var(--btn-active-bg) ;
-	    box-shadow: var(--glass-shadow);
+	    box-shadow: none !important;;
 	}
 
 	.btn-brand:hover {
@@ -140,29 +139,29 @@ function add_attendance(){
 	}
 
 	.attendance-summary {
-	    margin-bottom: var(--mar-md);
-	    display: flex;
-	    justify-content: space-evenly;
-	    align-items: center;
-     	    gap: 1%;
-	}
-	
-	.attendance-summary .summary-box {
-	    //background-color: var(--secondary-bg-color);
-	    background-color: var(--light-bg-color);
-	    border: var(--border-width) solid var(--border-color) !important;
-	    padding: 8px;
-	    text-align: center;
-	    width: 32.33%;
-	}
-	
-	span.summary-box:first-child {
-	    border-radius: 6px 0 0 6px !important;
-	}
-	
-	span.summary-box:last-child {
-	    border-radius: 0 6px 6px 0 !important;
-	}
+    	    margin-bottom: var(--mar-md);
+    	    display: flex;
+    	    justify-content: space-evenly;
+    	    align-items: center;
+    	    gap: 1%;
+    	}
+
+    	.attendance-summary .summary-box {
+    	    background-color: var(--secondary-bg-color);
+    	    background-color: var(--light-bg-color);
+    	    border: var(--border-width) solid var(--border-color) !important;
+    	    padding: 8px;
+    	    text-align: center;
+    	    width: 32.33%;
+    	}
+
+    	span.summary-box:first-child {
+    	    border-radius: 6px 0 0 6px !important;
+    	}
+
+    	span.summary-box:last-child {
+    	    border-radius: 0 6px 6px 0 !important;
+    	}
 	`;
 	document.head.appendChild(style);
 
@@ -210,11 +209,10 @@ function add_attendance(){
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'attendance-summary';
         summaryDiv.innerHTML = `
-	    <span class="summary-box">Total : ${absentees + presents}</span>
-	    <span class="summary-box">Present : ${presents}</span>
-	    <span class="summary-box">Absent : ${absentees}</span>
-	`;
-
+            <span class="summary-box">Total : ${absentees + presents}</span>
+            <span class="summary-box">Present : ${presents}</span>
+            <span class="summary-box">Absent : ${absentees}</span>
+        `;
         const parent = table.parentNode;
         parent.insertBefore(summaryDiv, table);
     });

@@ -307,14 +307,14 @@ function injectStyles() {
             color: var(--main-font-color, #fff);
             border: 0.75px solid #55555555 !important;
             font-size: 13px;
-	    padding: 10px;
-	    width: auto;
-	    margin: 10px 6px 0px 6px !important;
+		    padding: 10px;
+		    width: auto;
+		    margin: 10px 6px 0px 6px !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             z-index: 99;
             transition: transform 0.4s ease-in-out;
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: "Segoe UI Symbol", "Noto Color Emoji" !important;
         }
 
@@ -483,31 +483,31 @@ function injectStyles() {
             50% { opacity: 0; }
         }
 
- 	.utility-buttons {
-	    display: flex;
-	    flex-wrap: wrap;
-	    justify-content: space-between;
-	}
+ 	 	.utility-buttons {
+    	    display: flex;
+    	    flex-wrap: wrap;
+    	    justify-content: space-between;
+    	}
 
-	.utility-buttons .glass-button {
-		width: 45%;
-		padding: 6px 10px;
-		font-size: 12px;
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-		background: var(--blur-bg);
-		color: var(--main-font-color, #121212);
-		transition: background 0.3s ease;
-	}
+    	.utility-buttons .glass-button {
+    		width: 45%;
+    		padding: 6px 10px;
+    		font-size: 12px;
+    		display: flex;
+    		align-items: center;
+    		gap: 8px;
+    		border: none;
+    		border-radius: 6px;
+    		cursor: pointer;
+    		background: var(--blur-bg);
+    		color: var(--main-font-color, #121212);
+    		transition: background 0.3s ease;
+    	}
 
-	.utility-buttons .glass-button:nth-child(3) {
-		flex: 1 1 100%;
-		margin-top: 8px;
-	}
+    	.utility-buttons .glass-button:nth-child(3) {
+    		flex: 1 1 100%;
+    		margin-top: 8px;
+    	}
     `;
 
     document.head.appendChild(style);

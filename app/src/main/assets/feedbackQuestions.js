@@ -2,7 +2,6 @@ function add_questions_style(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	
 	.flaticon-more,
 	span.rdosp {
 		display: none !important;

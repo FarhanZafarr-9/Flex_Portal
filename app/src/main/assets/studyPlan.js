@@ -2,7 +2,6 @@ function add_attendance(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-
 	.flaticon-more {
 		display: none !important;
 	}

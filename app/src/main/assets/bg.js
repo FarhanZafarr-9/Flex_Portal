@@ -21,8 +21,8 @@ function resizeCanvas() {
 function drawGrid({
   boxSize = 20,
   bgColor = "#121212",
-  fillColor = "#181818",
-  strokeColor = "#55555555",
+  fillColor = "#161616",
+  strokeColor = "#66666666",
   strokeOpacity = 0.2,
   density = 0.35,
   randomOpacity = true,
@@ -52,14 +52,15 @@ function drawGrid({
 
 window.addEventListener("resize", () => {
   resizeCanvas();
-  drawGrid(currentSettings);
+  //drawGrid(currentSettings);
+  drawGrid()
 });
 
 const currentSettings = {
   boxSize: 20,
   bgColor: "#121212",
-  fillColor: "#181818",
-  strokeColor: "#55555555",
+  fillColor: "#161616",
+  strokeColor: "#66666666",
   strokeOpacity: 0.2,
   density: 0.35,
   randomOpacity: true,
@@ -192,15 +193,15 @@ function add_root_colors(){
             box-shadow: none !important;
             transform: translate(10px, -10px);
         }
-
+        
         .m-footer{
-        		box-shadow: none !important;
-        		background-color: transparent !important;
-        		margin-bottom: 4rem !important;
+            box-shadow: none !important;
+            background-color: transparent !important;
+            margin-bottom: 4rem !important;
         }
-	
+
         .m-footer .m-footer__copyright {
-        	  color: transparent !important;
+            color: transparent !important;
         }
     `;
     document.head.appendChild(style);

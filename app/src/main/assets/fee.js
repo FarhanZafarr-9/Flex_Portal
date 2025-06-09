@@ -2,7 +2,6 @@ function add_fee(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	
 	.flaticon-more,
 	span.rdosp {
 		display: none !important;
@@ -178,6 +177,23 @@ function add_fee(){
 	tr {
 		background-color: transparent !important;
 	}
+
+    .alert.m-alert--outline.alert-brand {
+        background-color: var(--bg-color);
+        border: var(--border-width) solid var(--border-color) !important;
+        color: var(--main-font-color);
+        font-weight: 400;
+        border-radius: var(--border-radius);
+        backdrop-filter: var(--glass-blur);
+        padding: var(--pad-xs);
+    }
+
+    .alert .close {
+        background-color: var(--glass-bg);
+        color: var(--main-font-color) !important;
+        border: var(--border-width) solid var(--border-color) !important;
+
+    }
 
 	`;
 	document.head.appendChild(style);

@@ -142,9 +142,9 @@ function add_retake(){
 	}
 
 	.btn, button {
-	    border-radius: calc(var(--border-radius) * 0.85) !important;
+	    border-radius: calc(var(--border-radius) * 0.65) !important;
 	    background-color: var(--btn-active-bg) ;
-	    box-shadow: var(--glass-shadow) !important;
+	    box-shadow: none !important;
 	    color: var(--main-font-color);
     	padding: var(--pad-sm) !important;
     	margin: var(--mar-sm) 0 !important;
@@ -167,6 +167,50 @@ function add_retake(){
 	    border-radius: var(--border-radius);
 	    background-color: var(--blur-bg) !important;
 	}
+
+    .alert.m-alert--outline.alert-info {
+        background-color: var(--glass-bg);
+        border: var(--border-width) solid var(--border-color) !important;
+        color: var(--main-font-color);
+        font-weight: 400;
+        border-radius: var(--border-radius);
+        backdrop-filter: var(--glass-blur);
+    }
+
+    .m-alert__icon {
+        border-radius: var(--border-radius);
+        background-color: var(--blur-bg) !important;
+    }
+
+    .alert.m-alert--outline.alert-warning {
+        background-color: var(--bg-color);
+        border: var(--border-width) solid var(--border-color) !important;
+        color: var(--main-font-color);
+        font-weight: 400;
+        border-radius: var(--border-radius);
+        backdrop-filter: var(--glass-blur);
+        padding: var(--pad-xs);
+    }
+
+    .alert .close {
+        background-color: var(--glass-bg);
+        color: var(--main-font-color) !important;
+        border: var(--border-width) solid var(--border-color) !important;
+        padding: .75rem !important;
+    }
+
+    .alert.m-alert--outline.alert-warning.m-alert--icon-solid .m-alert__icon {
+        background-color: var(--glass-bg);
+        border-radius: var(--border-radius);
+    }
+
+    .alert.m-alert--outline.alert-warning.m-alert--icon-solid .m-alert__icon i {
+        color: var(--main-font-color);
+    }
+
+    .alert.m-alert--outline.alert-info {
+        padding: 5px;
+    }
 
 	`;
 	document.head.appendChild(style);

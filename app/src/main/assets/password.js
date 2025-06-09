@@ -2,7 +2,6 @@ function add_password(){
 	const style = document.createElement('style');
 	style.innerHTML = `
 
-	
 	.flaticon-more,
 	span.rdosp {
 		display: none !important;
@@ -103,7 +102,7 @@ function add_password(){
 	.btn, button {
 	    border-radius: calc(var(--border-radius) * 0.85) !important;
 	    background-color: var(--btn-active-bg) ;
-	    box-shadow: var(--glass-shadow) !important;
+	    box-shadow: none !important;
 	    color: var(--main-font-color);
     	padding: var(--pad-sm) !important;
     	margin: var(--mar-sm) 0 !important;
