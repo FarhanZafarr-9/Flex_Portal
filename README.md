@@ -22,6 +22,15 @@ Most university portals are not optimized for mobile users. This app aims to sol
 - 🔒 Secure login using the actual Flex login system (no credential storage)
 - ⚡ Lightweight and fast — ideal for daily student use
 - 📁 Includes modular JS for different portal sections (marks, fees, attendance, etc.)
+- 🔄 Automatic Update Checker: Checks and notifies users with new version release
+
+---
+
+### Update Checker
+
+- **Automatic Update Checking**: The app now periodically checks for updates by querying the GitHub API for the latest release information.
+- **User Notification**: If a new version is available, users are notified with a dialog that includes the release notes and a direct download link.
+- **Markdown Rendering**: The release notes are rendered using a custom Markdown parser, ensuring that the information is displayed in a user-friendly format.
 
 ---
 
