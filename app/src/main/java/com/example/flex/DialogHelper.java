@@ -101,6 +101,7 @@ public class DialogHelper {
         TextView versionPill = dialogView.findViewById(R.id.version_pill);
         TextView sizeView = dialogView.findViewById(R.id.size_view);
         TextView notesView = dialogView.findViewById(R.id.notes_view);
+        TextView titleView = dialogView.findViewById(R.id.title_view);
         LinearLayout progressLayout = dialogView.findViewById(R.id.progress_layout);
         ProgressBar progressBar = dialogView.findViewById(R.id.progress_bar);
         TextView progressText = dialogView.findViewById(R.id.progress_text);
@@ -142,40 +143,45 @@ public class DialogHelper {
 
         // Set click listeners for custom buttons
         if (isFirstLaunch) {
+            titleView.setText("Update Notes");
+
             btnDownload.setText("OK");
             btnLater.setVisibility(View.GONE);
+
+            btnDownload.setOnClickListener(v -> {
+                dialog.dismiss();
+            });
         } else {
             btnDownload.setText("Update");
             btnLater.setVisibility(View.VISIBLE);
-        }
 
-        btnDownload.setOnClickListener(v -> {
-            if (!hasStoragePermission()) {
-                if (context instanceof MainActivity) {
-                    ((MainActivity) context).requestStoragePermission();
+            btnDownload.setOnClickListener(v -> {
+                if (!hasStoragePermission()) {
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).requestStoragePermission();
+                    }
+                    Toast.makeText(context, "Please grant storage permission first",
+                            Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                Toast.makeText(context, "Please grant storage permission first",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
 
-            progressLayout.setVisibility(View.VISIBLE);
-            btnDownload.setEnabled(false);
-            btnLater.setEnabled(false);
-            progressLabel.setText("Downloading update...");
-            downloadWithDownloadManager(downloadUrl, version, dialog,
-                    progressBar, progressText, progressLabel);
-        });
+                progressLayout.setVisibility(View.VISIBLE);
+                btnDownload.setEnabled(false);
+                btnLater.setEnabled(false);
+                progressLabel.setText("Downloading update...");
+                downloadWithDownloadManager(downloadUrl, version, dialog,
+                        progressBar, progressText, progressLabel);
+            });
 
-        btnLater.setOnClickListener(v -> {
-            cleanupOldApks();
-            dialog.dismiss();
-        });
+            btnLater.setOnClickListener(v -> {
+                cleanupOldApks();
+                dialog.dismiss();
+            });
+        }
 
         dialog.setOnCancelListener(dialogInterface -> cleanupOldApks());
         dialog.show();
     }
-
 
     private boolean hasStoragePermission() {
         if (context instanceof MainActivity) {
