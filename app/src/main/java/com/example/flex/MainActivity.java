@@ -4,6 +4,7 @@ import static android.webkit.WebViewClient.ERROR_CONNECT;
 import static android.webkit.WebViewClient.ERROR_HOST_LOOKUP;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
@@ -84,6 +85,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOGIN_URL = BASE_URL + "Login";
     private static final String MARKS_URL = BASE_URL + "Student/StudentMarks?semid=20251";
 
+    private static final String PREFS_NAME = "AppPrefs";
+    private static final String PREF_FIRST_LAUNCH = "FirstLaunch";
+
+    private boolean isFirstLaunch() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(PREF_FIRST_LAUNCH, true);
+    }
+
+    private void markFirstLaunchComplete() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(PREF_FIRST_LAUNCH, false);
+        editor.apply();
+    }
+    
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -660,12 +676,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Is newer version available? " + isNewer);
                 Log.d(TAG, "Version comparison: " + currentVer + " vs " + latestVer);
 
-                if (isNewer) {
+                if (isNewer || isFirstLaunch()) {
                     Log.d(TAG, "Showing update dialog...");
                     new Handler(Looper.getMainLooper()).post(() -> {
                         DialogHelper dialogHelper = new DialogHelper(MainActivity.this);
-                        dialogHelper.showUpdateDialog(latestVer, sizeMB, body, DURL);
+                        dialogHelper.showUpdateDialog(latestVer, sizeMB, body, DURL, isFirstLaunch());
                     });
+                    if(isFirstLaunch()){
+                        markFirstLaunchComplete();
+                    }
                 }
             } catch (Exception E) {
                 Log.e(TAG, "Update check failed", E);
