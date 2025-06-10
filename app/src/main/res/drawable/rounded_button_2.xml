@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Solid background (transparent in this case) -->
-    <solid android:color="#28282828" />
+    <solid android:color="#303030" />
 
     <!-- 0.75px border -->
     <stroke

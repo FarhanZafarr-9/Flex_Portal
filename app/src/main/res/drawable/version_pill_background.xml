@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Background color - you can change this to match your app's theme -->
+    <solid android:color="#55555555" />
+
+    <!-- Rounded corners for pill shape -->
+    <corners android:radius="6dp" />
+
+</shape>
