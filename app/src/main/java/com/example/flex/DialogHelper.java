@@ -91,7 +91,7 @@ public class DialogHelper {
         }
     }
 
-    public void showUpdateDialog(String version, int sizeMB, String releaseNotes, String downloadUrl) {
+    public void showUpdateDialog(String version, int sizeMB, String releaseNotes, String downloadUrl, boolean isFirstLaunch) {
         cleanupOldApks();
 
         // Inflate the layout
@@ -141,6 +141,14 @@ public class DialogHelper {
         }
 
         // Set click listeners for custom buttons
+        if (isFirstLaunch) {
+            btnDownload.setText("OK");
+            btnLater.setVisibility(View.GONE);
+        } else {
+            btnDownload.setText("Update");
+            btnLater.setVisibility(View.VISIBLE);
+        }
+
         btnDownload.setOnClickListener(v -> {
             if (!hasStoragePermission()) {
                 if (context instanceof MainActivity) {
@@ -167,6 +175,7 @@ public class DialogHelper {
         dialog.setOnCancelListener(dialogInterface -> cleanupOldApks());
         dialog.show();
     }
+
 
     private boolean hasStoragePermission() {
         if (context instanceof MainActivity) {
