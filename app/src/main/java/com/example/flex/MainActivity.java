@@ -86,20 +86,20 @@ public class MainActivity extends AppCompatActivity {
     private static final String MARKS_URL = BASE_URL + "Student/StudentMarks?semid=20251";
 
     private static final String PREFS_NAME = "AppPrefs";
-    private static final String PREF_FIRST_LAUNCH = "FirstLaunch";
 
-    private boolean isFirstLaunch() {
+    private static final String PREF_LAST_SHOWN_VERSION = "LastShownVersion";
+
+    private boolean shouldShowUpdateDialog(String currentVersion) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return prefs.getBoolean(PREF_FIRST_LAUNCH, true);
+        String lastShownVersion = prefs.getString(PREF_LAST_SHOWN_VERSION, "");
+        return !currentVersion.equals(lastShownVersion);
     }
 
-    private void markFirstLaunchComplete() {
+    private void markVersionShown(String version) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(PREF_FIRST_LAUNCH, false);
-        editor.apply();
+        prefs.edit().putString(PREF_LAST_SHOWN_VERSION, version).apply();
     }
-    
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -620,48 +620,44 @@ public class MainActivity extends AppCompatActivity {
     private void checkForUpdate() {
         new Thread(() -> {
             try {
-                Log.d(TAG, "Starting update check...");
+                //Log.d(TAG, "Starting update check...");
 
                 // Get current version first
                 PackageInfo PI = getPackageManager().getPackageInfo(getPackageName(), 0);
                 String currentVer = PI.versionName;
-                Log.d(TAG, "Current app version: " + currentVer);
+                //Log.d(TAG, "Current app version: " + currentVer);
 
                 URL url = new URL("https://api.github.com/repos/FarhanZafarr-9/Flex_Portal/releases/latest");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(10000); // 10 second timeout
+                conn.setConnectTimeout(10000);
                 conn.setReadTimeout(10000);
 
                 int responseCode = conn.getResponseCode();
-                Log.d(TAG, "GitHub API response code: " + responseCode);
+                //Log.d(TAG, "GitHub API response code: " + responseCode);
 
                 if (responseCode != 200) {
-                    Log.e(TAG, "GitHub API request failed with code: " + responseCode);
+                    //Log.e(TAG, "GitHub API request failed with code: " + responseCode);
                     return;
                 }
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder SB = new StringBuilder();
-                String L;
-                while ((L = reader.readLine()) != null) SB.append(L);
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    SB.append(line);
+                }
                 reader.close();
 
                 String jsonResponse = SB.toString();
-                Log.d(TAG, "GitHub API response: " + jsonResponse.substring(0, Math.min(200, jsonResponse.length())) + "...");
-
                 JSONObject J = new JSONObject(jsonResponse);
                 String tagName = J.getString("tag_name");
                 String latestVer = tagName.replace("v", "");
                 String body = J.getString("body");
 
-                Log.d(TAG, "Latest version tag: " + tagName);
-                Log.d(TAG, "Latest version (cleaned): " + latestVer);
-                Log.d(TAG, "Release notes: " + body);
-
                 // Check if assets exist
                 if (!J.has("assets") || J.getJSONArray("assets").length() == 0) {
-                    Log.e(TAG, "No assets found in the release");
+                    //Log.e(TAG, "No assets found in the release");
                     return;
                 }
 
@@ -669,40 +665,41 @@ public class MainActivity extends AppCompatActivity {
                 String DURL = asset.getString("browser_download_url");
                 int sizeMB = asset.getInt("size") / (1024 * 1024);
 
-                Log.d(TAG, "Asset download URL: " + DURL);
-                Log.d(TAG, "Asset size: " + sizeMB + " MB");
-
                 boolean isNewer = isNewerVersion(currentVer, latestVer);
-                Log.d(TAG, "Is newer version available? " + isNewer);
-                Log.d(TAG, "Version comparison: " + currentVer + " vs " + latestVer);
 
-                if (isNewer || isFirstLaunch()) {
-                    Log.d(TAG, "Showing update dialog...");
+                boolean showAsNotesOnly = shouldShowUpdateDialog(currentVer);
+
+                if (isNewer || showAsNotesOnly) {
+
                     new Handler(Looper.getMainLooper()).post(() -> {
                         DialogHelper dialogHelper = new DialogHelper(MainActivity.this);
-                        dialogHelper.showUpdateDialog(latestVer, sizeMB, body, DURL, isFirstLaunch());
+                        dialogHelper.showUpdateDialog(latestVer, sizeMB, body, DURL, showAsNotesOnly);
+
+                        if (showAsNotesOnly) {
+                            markVersionShown(currentVer);
+                        }
                     });
-                    if(isFirstLaunch()){
-                        markFirstLaunchComplete();
-                    }
                 }
+
             } catch (Exception E) {
                 Log.e(TAG, "Update check failed", E);
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to check for updates", Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
 
     private boolean isNewerVersion(String current, String latest) {
-        Log.d(TAG, "Comparing versions - Current: '" + current + "', Latest: '" + latest + "'");
+        //Log.d(TAG, "=== VERSION COMPARISON DEBUG ===");
+        //Log.d(TAG, "Comparing versions - Current: '" + current + "', Latest: '" + latest + "'");
 
         // Handle null or empty versions
         if (current == null || latest == null) {
-            Log.e(TAG, "One of the versions is null - Current: " + current + ", Latest: " + latest);
+            //Log.e(TAG, "One of the versions is null - Current: " + current + ", Latest: " + latest);
             return false;
         }
 
         if (current.trim().isEmpty() || latest.trim().isEmpty()) {
-            Log.e(TAG, "One of the versions is empty - Current: '" + current + "', Latest: '" + latest + "'");
+            //Log.e(TAG, "One of the versions is empty - Current: '" + current + "', Latest: '" + latest + "'");
             return false;
         }
 
@@ -710,41 +707,58 @@ public class MainActivity extends AppCompatActivity {
         current = current.trim();
         latest = latest.trim();
 
+        // Check for exact match first
+        if (current.equals(latest)) {
+            //Log.d(TAG, "Versions are identical");
+            return false;
+        }
+
         String[] currentParts = current.split("\\.");
         String[] latestParts = latest.split("\\.");
 
-        Log.d(TAG, "Current parts: " + java.util.Arrays.toString(currentParts));
-        Log.d(TAG, "Latest parts: " + java.util.Arrays.toString(latestParts));
+       // Log.d(TAG, "Current parts: " + java.util.Arrays.toString(currentParts));
+        //Log.d(TAG, "Latest parts: " + java.util.Arrays.toString(latestParts));
 
-        for (int i = 0; i < Math.min(currentParts.length, latestParts.length); i++) {
-            try {
-                int currentNum = Integer.parseInt(currentParts[i].trim());
-                int latestNum = Integer.parseInt(latestParts[i].trim());
+        int maxLength = Math.max(currentParts.length, latestParts.length);
 
-                Log.d(TAG, "Comparing part " + i + ": " + currentNum + " vs " + latestNum);
+        for (int i = 0; i < maxLength; i++) {
+            int currentNum = 0;
+            int latestNum = 0;
 
-                if (latestNum > currentNum) {
-                    Log.d(TAG, "Latest version is newer at part " + i);
-                    return true;
-                }
-                if (latestNum < currentNum) {
-                    Log.d(TAG, "Current version is newer at part " + i);
+            // Get current version part (default to 0 if not present)
+            if (i < currentParts.length) {
+                try {
+                    currentNum = Integer.parseInt(currentParts[i].trim());
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing current version part " + i + ": " + currentParts[i]);
                     return false;
                 }
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Error parsing version numbers at part " + i + ": " + e.getMessage());
-                // Fallback to string comparison
-                if (!latestParts[i].equals(currentParts[i])) {
-                    boolean result = latestParts[i].compareTo(currentParts[i]) > 0;
-                    Log.d(TAG, "Using string comparison: " + result);
-                    return result;
+            }
+
+            // Get latest version part (default to 0 if not present)
+            if (i < latestParts.length) {
+                try {
+                    latestNum = Integer.parseInt(latestParts[i].trim());
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing latest version part " + i + ": " + latestParts[i]);
+                    return false;
                 }
+            }
+
+            Log.d(TAG, "Comparing part " + i + ": " + currentNum + " vs " + latestNum);
+
+            if (latestNum > currentNum) {
+                //Log.d(TAG, "Latest version is newer at part " + i);
+                return true;
+            }
+            if (latestNum < currentNum) {
+                //Log.d(TAG, "Current version is newer at part " + i);
+                return false;
             }
         }
 
-        boolean result = latestParts.length > currentParts.length;
-        Log.d(TAG, "Version comparison result (length check): " + result);
-        return result;
+        Log.d(TAG, "Versions are equal after full comparison");
+        return false;
     }
 
     boolean hasStoragePermission() {
