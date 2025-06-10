@@ -8,26 +8,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.text.Layout;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -95,211 +91,81 @@ public class DialogHelper {
         }
     }
 
-    public void showUpdateDialog(String ver, int sizeMB, String notes, String DURL) {
+    public void showUpdateDialog(String version, int sizeMB, String releaseNotes, String downloadUrl) {
         cleanupOldApks();
 
+        // Inflate the layout
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_update, null);
+
+        // Initialize views
+        TextView versionPill = dialogView.findViewById(R.id.version_pill);
+        TextView sizeView = dialogView.findViewById(R.id.size_view);
+        TextView notesView = dialogView.findViewById(R.id.notes_view);
+        LinearLayout progressLayout = dialogView.findViewById(R.id.progress_layout);
+        ProgressBar progressBar = dialogView.findViewById(R.id.progress_bar);
+        TextView progressText = dialogView.findViewById(R.id.progress_text);
+        TextView progressLabel = dialogView.findViewById(R.id.progress_label);
+        Button btnDownload = dialogView.findViewById(R.id.btn_download);
+        Button btnLater = dialogView.findViewById(R.id.btn_later);
+
+        // Set dynamic content
+        versionPill.setText(String.format("v%s", version));
+        sizeView.setText(String.format("%d MB", sizeMB));
+
+        // Parse and display markdown notes
         int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        int desiredWidthPx = dpToPx(400);
-        int finalWidthPx = Math.min(desiredWidthPx,(int) (screenWidth * 0.9));
-
-        // Main container layout
-        LinearLayout mainLayout = new LinearLayout(context);
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
-        mainLayout.setPadding(0, 0, 0, 0);
-        mainLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                finalWidthPx,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        ));
-
-        // Header section
-        LinearLayout headerLayout = new LinearLayout(context);
-        headerLayout.setOrientation(LinearLayout.HORIZONTAL);
-        headerLayout.setPadding(dpToPx(24), dpToPx(24), dpToPx(24), dpToPx(16));
-        headerLayout.setGravity(Gravity.CENTER_VERTICAL);
-
-        LinearLayout leftSection = new LinearLayout(context);
-        leftSection.setOrientation(LinearLayout.HORIZONTAL);
-        leftSection.setGravity(Gravity.CENTER_VERTICAL);
-        leftSection.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-        TextView iconView = new TextView(context);
-        iconView.setText("ⓘ");
-        iconView.setTextSize(32);
-        iconView.setPadding(0, 0, dpToPx(16), 0);
-        leftSection.addView(iconView);
-
-        TextView titleView = new TextView(context);
-        titleView.setText("Update Available");
-        titleView.setTextSize(20);
-        titleView.setTypeface(null, Typeface.BOLD);
-        titleView.setTextColor(ContextCompat.getColor(context, android.R.color.white));
-        leftSection.addView(titleView);
-
-        headerLayout.addView(leftSection);
-
-        LinearLayout rightSection = new LinearLayout(context);
-        rightSection.setOrientation(LinearLayout.VERTICAL);
-        rightSection.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-
-        TextView versionPill = new TextView(context);
-        versionPill.setText("v" + ver);
-        versionPill.setTextSize(12);
-        versionPill.setTypeface(null, Typeface.BOLD);
-        versionPill.setTextColor(ContextCompat.getColor(context, android.R.color.white));
-        versionPill.setPadding(dpToPx(12), dpToPx(6), dpToPx(12), dpToPx(6));
-        versionPill.setBackground(ContextCompat.getDrawable(context, R.drawable.version_pill_background));
-        rightSection.addView(versionPill);
-
-        TextView sizeView = new TextView(context);
-        sizeView.setText(sizeMB + " MB");
-        sizeView.setTextSize(12);
-        sizeView.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-        sizeView.setGravity(Gravity.END);
-        sizeView.setPadding(0, dpToPx(4), dpToPx(8), 0);
-        rightSection.addView(sizeView);
-
-        headerLayout.addView(rightSection);
-        mainLayout.addView(headerLayout);
-
-        View divider1 = new View(context);
-        divider1.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)
-        ));
-        divider1.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-        mainLayout.addView(divider1);
-
-        // Scrollable content section
-        ScrollView scrollView = new ScrollView(context);
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(250)
-        ));
-        scrollView.setSmoothScrollingEnabled(true);
-        scrollView.setFadingEdgeLength(dpToPx(16));
-        scrollView.setVerticalFadingEdgeEnabled(true);
-        scrollView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        scrollView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
-
-        LinearLayout contentLayout = new LinearLayout(context);
-        contentLayout.setOrientation(LinearLayout.VERTICAL);
-        contentLayout.setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(16));
-
-        TextView releaseNotesLabel = new TextView(context);
-        releaseNotesLabel.setText("What's New");
-        releaseNotesLabel.setTextSize(16);
-        releaseNotesLabel.setTypeface(null, Typeface.BOLD);
-        releaseNotesLabel.setTextColor(ContextCompat.getColor(context, android.R.color.white));
-        releaseNotesLabel.setPadding(0, 0, 0, dpToPx(12));
-        contentLayout.addView(releaseNotesLabel);
-
-        MarkdownHelper markdownHelper = new MarkdownHelper(context, finalWidthPx);
-        TextView notesView = new TextView(context);
-        notesView.setText(markdownHelper.parseEnhancedMarkdown(notes));
-        notesView.setTextSize(14);
-        notesView.setTextColor(ContextCompat.getColor(context, android.R.color.secondary_text_dark));
-        notesView.setLineSpacing(dpToPx(4), 1.2f);
+        int desiredWidth = Math.min((int) (screenWidth * 0.975), 450);
+        MarkdownHelper markdownHelper = new MarkdownHelper(context, dpToPx(desiredWidth));
+        notesView.setText(markdownHelper.parseEnhancedMarkdown(releaseNotes));
         notesView.setMovementMethod(LinkMovementMethod.getInstance());
-        notesView.setTextIsSelectable(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notesView.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
-        }
-        contentLayout.addView(notesView);
 
-        scrollView.addView(contentLayout);
-        mainLayout.addView(scrollView);
+        // Create dialog without default buttons
+        AlertDialog dialog = new AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Dialog)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
 
-        // Progress section (initially hidden)
-        LinearLayout progressLayout = new LinearLayout(context);
-        progressLayout.setOrientation(LinearLayout.VERTICAL);
-        progressLayout.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), dpToPx(16));
-        progressLayout.setVisibility(View.GONE);
-
-        TextView progressLabel = new TextView(context);
-        progressLabel.setText("Downloading...");
-        progressLabel.setTextSize(14);
-        progressLabel.setTextColor(ContextCompat.getColor(context, android.R.color.white));
-        progressLabel.setPadding(0, 0, 0, dpToPx(8));
-        progressLayout.addView(progressLabel);
-
-        ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
-        progressBar.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(8)
-        ));
-        progressBar.setProgressDrawable(ContextCompat.getDrawable(context, R.drawable.custom_progress_bar));
-        progressLayout.addView(progressBar);
-
-        TextView progressText = new TextView(context);
-        progressText.setText("0%");
-        progressText.setTextSize(12);
-        progressText.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-        progressText.setPadding(0, dpToPx(4), 0, 0);
-        progressText.setGravity(Gravity.CENTER);
-        progressLayout.addView(progressText);
-
-        mainLayout.addView(progressLayout);
-
-        View divider2 = new View(context);
-        divider2.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1)
-        ));
-        divider2.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-        mainLayout.addView(divider2);
-
-        // Wrap mainLayout inside a fixed-width container
-        FrameLayout container = new FrameLayout(context);
-        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
-                finalWidthPx, FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-        container.setLayoutParams(containerParams);
-        container.addView(mainLayout);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(
-                context, android.R.style.Theme_DeviceDefault_Dialog
-        );
-        builder.setView(container)
-                .setPositiveButton("Download", null)
-                .setNegativeButton("Later", null);
-
-        AlertDialog dialog = builder.create();
-
+        // Set window attributes
         Window window = dialog.getWindow();
         if (window != null) {
-            window.setBackgroundDrawableResource(R.drawable.dialog_rounded_background);
             WindowManager.LayoutParams lp = window.getAttributes();
-            lp.width = finalWidthPx;
+            lp.width = desiredWidth;
             lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             lp.gravity = Gravity.CENTER;
             window.setAttributes(lp);
+            window.setBackgroundDrawableResource(R.drawable.dialog_rounded_background);
+
+            // Add dimming effect
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            window.setDimAmount(.9f); // 0 = fully transparent, 1 = fully opaque
         }
+
+        // Set click listeners for custom buttons
+        btnDownload.setOnClickListener(v -> {
+            if (!hasStoragePermission()) {
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).requestStoragePermission();
+                }
+                Toast.makeText(context, "Please grant storage permission first",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            progressLayout.setVisibility(View.VISIBLE);
+            btnDownload.setEnabled(false);
+            btnLater.setEnabled(false);
+            progressLabel.setText("Downloading update...");
+            downloadWithDownloadManager(downloadUrl, version, dialog,
+                    progressBar, progressText, progressLabel);
+        });
+
+        btnLater.setOnClickListener(v -> {
+            cleanupOldApks();
+            dialog.dismiss();
+        });
 
         dialog.setOnCancelListener(dialogInterface -> cleanupOldApks());
         dialog.show();
-
-        Button posBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button negBtn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-        if (posBtn != null && negBtn != null) {
-            posBtn.setOnClickListener(v -> {
-                if (!hasStoragePermission()) {
-                    if (context instanceof MainActivity) {
-                        ((MainActivity) context).requestStoragePermission();
-                    }
-                    Toast.makeText(context, "Please grant storage permission first", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                progressLayout.setVisibility(View.VISIBLE);
-                posBtn.setEnabled(false);
-                negBtn.setEnabled(false);
-                progressLabel.setText("Downloading update...");
-                downloadWithDownloadManager(DURL, ver, dialog, progressBar, progressText, progressLabel);
-            });
-
-            negBtn.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-            negBtn.setOnClickListener(v -> {
-                cleanupOldApks();
-                dialog.dismiss();
-            });
-        }
     }
 
     private boolean hasStoragePermission() {
@@ -453,13 +319,15 @@ public class DialogHelper {
         progressText.setText("100% - Ready to install");
         progressLabel.setText("Download complete");
 
-        Button installBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        installBtn.setText("Install Now");
-        installBtn.setEnabled(true);
-        installBtn.setOnClickListener(v -> {
-            dialog.dismiss();
-            installApk(fileName);
-        });
+        Button btnDownload = dialog.findViewById(R.id.btn_download);
+        if (btnDownload != null) {
+            btnDownload.setText("Install");
+            btnDownload.setEnabled(true);
+            btnDownload.setOnClickListener(v -> {
+                dialog.dismiss();
+                installApk(fileName);
+            });
+        }
     }
 
     private void handleDownloadFailure(AlertDialog dialog, TextView progressText,
