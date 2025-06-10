@@ -115,7 +115,7 @@ public class DialogHelper {
 
         // Parse and display markdown notes
         int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        int desiredWidth = Math.min((int) (screenWidth * 0.975), 450);
+        int desiredWidth = (int) (screenWidth * 0.9);
         MarkdownHelper markdownHelper = new MarkdownHelper(context, dpToPx(desiredWidth));
         notesView.setText(markdownHelper.parseEnhancedMarkdown(releaseNotes));
         notesView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -126,35 +126,30 @@ public class DialogHelper {
                 .setCancelable(true)
                 .create();
 
-        // Set window attributes
-        Window window = dialog.getWindow();
-        if (window != null) {
-            WindowManager.LayoutParams lp = window.getAttributes();
-            lp.width = desiredWidth;
-            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            lp.gravity = Gravity.CENTER;
-            window.setAttributes(lp);
-            window.setBackgroundDrawableResource(R.drawable.dialog_rounded_background);
-
-            // Add dimming effect
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setDimAmount(.9f); // 0 = fully transparent, 1 = fully opaque
-        }
+        // Set window attributes AFTER showing the dialog (this is key)
+        dialog.setOnShowListener(dialogInterface -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                WindowManager.LayoutParams lp = window.getAttributes();
+                lp.width = desiredWidth;
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                lp.gravity = Gravity.CENTER;
+                window.setAttributes(lp);
+                window.setBackgroundDrawableResource(R.drawable.dialog_rounded_background);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                window.setDimAmount(.9f);
+            }
+        });
 
         // Set click listeners for custom buttons
         if (isFirstLaunch) {
             titleView.setText("Update Notes");
-
             btnDownload.setText("OK");
             btnLater.setVisibility(View.GONE);
-
-            btnDownload.setOnClickListener(v -> {
-                dialog.dismiss();
-            });
+            btnDownload.setOnClickListener(v -> dialog.dismiss());
         } else {
             btnDownload.setText("Update");
             btnLater.setVisibility(View.VISIBLE);
-
             btnDownload.setOnClickListener(v -> {
                 if (!hasStoragePermission()) {
                     if (context instanceof MainActivity) {
@@ -164,7 +159,6 @@ public class DialogHelper {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 progressLayout.setVisibility(View.VISIBLE);
                 btnDownload.setEnabled(false);
                 btnLater.setEnabled(false);
@@ -172,7 +166,6 @@ public class DialogHelper {
                 downloadWithDownloadManager(downloadUrl, version, dialog,
                         progressBar, progressText, progressLabel);
             });
-
             btnLater.setOnClickListener(v -> {
                 cleanupOldApks();
                 dialog.dismiss();
